@@ -1,0 +1,20 @@
+.choose-city
+{
+    padding: 20px;
+}
+
+.choose-city__search-results
+{
+    margin: 20px 0;
+}
+
+.choose-city__search-result
+{
+    padding: 20px;
+    cursor: pointer;
+}
+
+.choose-city__search-result:hover
+{
+    background: #ccc;
+}

@@ -2,17 +2,29 @@ import React, { Component } from 'react';
 
 import './App.css';
 
-import Clock from './Clock/Clock';
+import ClockWidget from './ClockWidget/ClockWidget';
 import ChooseCity from './ChooseCity/ChooseCity';
 
 class App extends Component {
   state = {
       clock: new Date(),
+      currentPosition: null,
       cities: []
   }
 
   componentDidMount() {
       setInterval(this.updateClock, 1000);
+
+      navigator.geolocation.getCurrentPosition(this.saveCurrentPosition);
+  }
+
+  saveCurrentPosition = position => {
+      this.setState({
+          currentPosition: {
+              lat: position.coords.latitude,
+              lon: position.coords.longitude
+          }
+      });
   }
 
   getClockDataForCities() {
@@ -43,31 +55,22 @@ class App extends Component {
       });
   }
 
-  addClock = tempCity => {
+  addClock = ({display_name, lat, lon, place_id}) => {
       const {cities} = this.state;
 
       this.setState({
-          cities: [...cities, tempCity]
+          cities: [...cities, {display_name, lat, lon, place_id}]
       });
   }
 
   render() {
-      const {clock} = this.state,
-        {date, time} = this.getClockData(clock),
-        citiesClocks = this.getClockDataForCities();
+      const {currentPosition} = this.state;
 
       return (
           <div className='app'>
               <ChooseCity addCity={this.addClock}/>
-              <h3>Текущее время</h3>
-              <Clock date={date} time={time}/>
+              {currentPosition && <ClockWidget {...currentPosition}/>}
               <hr/>
-              {citiesClocks.map(({name, clockData}) => (
-                  <React.Fragment key={name}>
-                      <h3>{name}</h3>
-                      <Clock date={clockData.date} time={clockData.time}/>
-                  </React.Fragment>
-              ))}
           </div>
       );
   }
